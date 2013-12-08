@@ -4,7 +4,9 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class SqlSelect implements Iterable<Record> {
     private DataSource db;
@@ -16,43 +18,30 @@ public class SqlSelect implements Iterable<Record> {
         this.sql = sql;
     }
 
+    public List<Record> all() {
+        List<Record> records = new ArrayList<Record>();
+        ResultSet resultSet = execute();
+        try {
+            while (resultSet.next()) {
+                records.add(Record.create(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new SqlException(e.getMessage(), e);
+        } finally {
+            closeResultSetSilent(resultSet);
+        }
+        return records;
+    }
+
     @Override
     public Iterator<Record> iterator() {
-        final ResultSet resultSet = execute();
-        return new Iterator<Record>() {
-            Boolean lastHasNext = null;
-
-            @Override
-            public boolean hasNext() {
-                try {
-                    if (lastHasNext == null) {
-                        lastHasNext = resultSet.next();
-                    }
-                    return lastHasNext;
-                } catch (SQLException e) {
-                    throw new SqlException(e.getMessage(), e);
-                }
-            }
-
-            @Override
-            public Record next() {
-
-                if (hasNext()) {
-                    lastHasNext = null;
-                    return Record.create(resultSet);
-                } else return null;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Remove not supported");
-            }
-        };
+        return all().iterator();
     }
 
     private ResultSet execute() {
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = db.getConnection().prepareStatement(sql);
+            statement = db.getConnection().prepareStatement(sql);
 
             for (int i = 0; i < parameters.length; i++) {
                 statement.setObject(i + 1, parameters[i]);
@@ -65,6 +54,26 @@ public class SqlSelect implements Iterable<Record> {
         }
     }
 
+    private void closeStatementSilent(PreparedStatement statement) {
+        try {
+            if (statement != null) {
+                statement.close();
+            }
+        } catch (SQLException ignore) {
+
+        }
+    }
+
+    private void closeResultSetSilent(ResultSet resultSet) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        } catch (SQLException ignore) {
+
+        }
+    }
+
     public SqlSelect parameters(Object[] parameters) {
         this.parameters = parameters;
         return this;
@@ -72,26 +81,32 @@ public class SqlSelect implements Iterable<Record> {
 
 
     public Record first() {
+        Record record = null;
         ResultSet resultSet = execute();
         try {
             if (resultSet.next()) {
-                return Record.create(resultSet);
+                record = Record.create(resultSet);
             }
         } catch (SQLException ignore) {
+        } finally {
+            closeResultSetSilent(resultSet);
         }
-        return null;
+        return record;
     }
 
     public Record last() {
+        Record record = null;
         ResultSet resultSet = execute();
         try {
             while (resultSet.next()) {
                 if (resultSet.last()) {
-                    return Record.create(resultSet);
+                    record = Record.create(resultSet);
                 }
             }
         } catch (SQLException ignore) {
+        } finally {
+            closeResultSetSilent(resultSet);
         }
-        return null;
+        return record;
     }
 }
