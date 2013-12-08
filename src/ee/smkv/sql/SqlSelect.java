@@ -60,4 +60,28 @@ public class SqlSelect implements Iterable<Record> {
         this.parameters = parameters;
         return this;
     }
+
+
+    public Record first() {
+        ResultSet resultSet = execute();
+        try {
+            if (resultSet.next()) {
+                return Record.create(resultSet);
+            }
+        } catch (SQLException ignore) {
+        }
+        return null;
+    }
+
+    public Record last() {
+        ResultSet resultSet = execute();
+        try {
+            while (resultSet.next()) {
+
+            }
+            return Record.create(resultSet);
+        } catch (SQLException ignore) {
+        }
+        return null;
+    }
 }
