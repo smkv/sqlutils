@@ -1,16 +1,17 @@
 package ee.smkv.sql;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
 public class SqlSelect implements Iterable<Record> {
-    private Database db;
+    private DataSource db;
     private String sql;
     private Object[] parameters = {};
 
-    public SqlSelect(Database db, String sql) {
+    public SqlSelect(DataSource db, String sql) {
         this.db = db;
         this.sql = sql;
     }

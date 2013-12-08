@@ -1,17 +1,18 @@
 package ee.smkv.sql;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SqlInsert {
-    private Database db;
+    private DataSource db;
     private String sql;
     private Object[] parameters;
     private ResultSet resultSet;
 
-    public SqlInsert(Database db, String sql) {
+    public SqlInsert(DataSource db, String sql) {
         this.db = db;
         this.sql = sql;
     }

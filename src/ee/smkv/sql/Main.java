@@ -2,14 +2,15 @@ package ee.smkv.sql;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
 
-        Database db = new Database("jdbc:h2:findroute", "sa", "", "org.h2.Driver");
+        Database db = new Database(new SimpleDataSource("jdbc:h2:findroute", "sa", "", "org.h2.Driver"));
 
         db.insert("insert into route (time , start, destination, company, duration , price) values(?,?,?,?,?,?)",
-                new Timestamp(System.currentTimeMillis()) ,
+                new Date(),
                 "TLL",
                 "ARN",
                 "Estonianair",
