@@ -80,7 +80,7 @@ public class SimpleDataSource implements DataSource {
         return connect();
     }
 
-    private void close() {
+    public void close() {
         try {
             if (connection != null) {
                 connection.close();

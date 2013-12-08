@@ -29,4 +29,7 @@ public class Database {
         return new SqlInsert(dataSource, sql).parameters(parameters).execute();
     }
 
+    public void execute(String sql) {
+        new Sql(dataSource, sql).execute();
+    }
 }

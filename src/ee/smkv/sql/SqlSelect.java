@@ -20,10 +20,15 @@ public class SqlSelect implements Iterable<Record> {
     public Iterator<Record> iterator() {
         final ResultSet resultSet = execute();
         return new Iterator<Record>() {
+            Boolean lastHasNext = null;
+
             @Override
             public boolean hasNext() {
                 try {
-                    return resultSet.next();
+                    if (lastHasNext == null) {
+                        lastHasNext = resultSet.next();
+                    }
+                    return lastHasNext;
                 } catch (SQLException e) {
                     throw new SqlException(e.getMessage(), e);
                 }
@@ -31,7 +36,11 @@ public class SqlSelect implements Iterable<Record> {
 
             @Override
             public Record next() {
-                return Record.create(resultSet);
+
+                if (hasNext()) {
+                    lastHasNext = null;
+                    return Record.create(resultSet);
+                } else return null;
             }
 
             @Override
@@ -77,9 +86,10 @@ public class SqlSelect implements Iterable<Record> {
         ResultSet resultSet = execute();
         try {
             while (resultSet.next()) {
-
+                if (resultSet.last()) {
+                    return Record.create(resultSet);
+                }
             }
-            return Record.create(resultSet);
         } catch (SQLException ignore) {
         }
         return null;

@@ -44,4 +44,8 @@ public class Record {
     public String toString(){
         return "Record"+data;
     }
+
+    public Object get(String key) {
+        return data.get(key);
+    }
 }
