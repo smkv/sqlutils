@@ -17,10 +17,10 @@ public class SqlSelectTest {
     @Before
     public void init() throws Exception{
         ds = new TestInMemoryDataSource(SqlSelectTest.class);
-        new Sql(ds, "CREATE TABLE S (I INT , V VARCHAR2(255))").execute();
-        new Sql(ds, "INSERT INTO S (I,V) VALUES(1,'test1')").execute();
-        new Sql(ds, "INSERT INTO S (I,V) VALUES(2,'test2')").execute();
-        new Sql(ds, "INSERT INTO S (I,V) VALUES(3,'test3')").execute();
+        new Sql(ds, "CREATE TABLE S (I INT , V VARCHAR2(255))").execute().close();
+        new Sql(ds, "INSERT INTO S (I,V) VALUES(1,'test1')").execute().close();
+        new Sql(ds, "INSERT INTO S (I,V) VALUES(2,'test2')").execute().close();
+        new Sql(ds, "INSERT INTO S (I,V) VALUES(3,'test3')").execute().close();
     }
 
     @After

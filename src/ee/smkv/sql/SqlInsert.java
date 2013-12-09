@@ -6,38 +6,52 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SqlInsert {
-    private DataSource db;
-    private String sql;
-    private Object[] parameters;
-    private ResultSet resultSet;
+public class SqlInsert extends Sql {
 
-    public SqlInsert(DataSource db, String sql) {
-        this.db = db;
-        this.sql = sql;
-    }
+  protected Object[] parameters;
+  protected ResultSet resultSet;
 
-    public SqlInsert parameters(Object[] parameters) {
-        this.parameters = parameters;
-        return this;
-    }
+  public SqlInsert(DataSource dataSource, String sql) {
+    super(dataSource, sql);
+  }
 
-    public SqlInsert execute(){
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            for(int i = 0 ; i < parameters.length ; i++){
-                 statement.setObject(i+1 , parameters[i]);
-            }
-            statement.executeUpdate();
-            resultSet = statement.getGeneratedKeys();
-            resultSet.next();
-        } catch (SQLException e) {
-            throw new SqlException(e.getMessage() , e);
-        }
-        return this;
-    }
+  public SqlInsert parameters(Object ... parameters) {
+    this.parameters = parameters;
+    return this;
+  }
 
-    public Object getGenerated(String name) {
-        return null;
+  @Override
+  protected PreparedStatement createStatementIfNecessary() throws SQLException {
+    if (statement == null) {
+      statement = dataSource.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
     }
+    return (PreparedStatement)statement;
+  }
+
+  @Override
+  public SqlInsert execute() {
+    try {
+      PreparedStatement preparedStatement = createStatementIfNecessary();
+
+      for (int i = 0; i < parameters.length; i++) {
+        preparedStatement.setObject(i + 1, parameters[i]);
+      }
+      preparedStatement.executeUpdate();
+      resultSet = statement.getGeneratedKeys();
+      resultSet.next();
+    }
+    catch (SQLException e) {
+      throw new SqlException(e.getMessage(), e);
+    }
+    return this;
+  }
+
+  public Object getGeneratedKey() {
+    try {
+      return resultSet.getObject(1);
+    }
+    catch (SQLException e) {
+      throw new SqlException("Unable to get generated key: " + e.getMessage(), e);
+    }
+  }
 }
