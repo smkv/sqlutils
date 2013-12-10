@@ -32,4 +32,8 @@ public class Database {
     public void execute(String sql) {
         new Sql(dataSource, sql).execute().close();
     }
+
+    public Object executeFunction(String name, Object ... parameters){
+       return new SqlFunction(dataSource , name , parameters).execute().getResult();
+    }
 }
