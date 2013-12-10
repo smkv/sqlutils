@@ -30,6 +30,6 @@ public class Database {
     }
 
     public void execute(String sql) {
-        new Sql(dataSource, sql).execute();
+        new Sql(dataSource, sql).execute().close();
     }
 }
