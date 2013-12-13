@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Database {
@@ -36,4 +37,8 @@ public class Database {
     public Object executeFunction(String name, Object ... parameters){
        return new SqlFunction(dataSource , name , parameters).execute().getResult();
     }
+
+  public Map<String, Object> executeProcedure(String name, String ... parameters) {
+    return new SqlProcedure(dataSource ,name ,parameters).execute().getOutParameters();
+  }
 }

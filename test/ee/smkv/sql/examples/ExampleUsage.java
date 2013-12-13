@@ -4,8 +4,9 @@ import ee.smkv.sql.Database;
 import ee.smkv.sql.Record;
 import ee.smkv.sql.SimpleDataSource;
 
-import java.sql.Connection;
+
 import java.sql.Timestamp;
+import java.util.Map;
 
 /**
  * @author samko
@@ -32,6 +33,9 @@ public class ExampleUsage {
 
     database.execute("CREATE ALIAS custom_today FOR \"ee.smkv.sql.examples.ExampleUsage.today\"");
     System.out.println( database.executeFunction("custom_today"));
+
+    database.execute("CREATE ALIAS print FOR \"ee.smkv.sql.examples.ExampleUsage.print\"");
+    database.executeProcedure("print" , "Hello SQL utils");
   }
 
 
@@ -41,4 +45,9 @@ public class ExampleUsage {
   public static Timestamp today(){
     return new Timestamp(System.currentTimeMillis());
   }
+
+  public static void print(String text){
+    System.out.println(text);
+  }
+
 }
