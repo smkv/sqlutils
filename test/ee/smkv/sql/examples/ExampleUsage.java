@@ -3,6 +3,7 @@ package ee.smkv.sql.examples;
 import ee.smkv.sql.Database;
 import ee.smkv.sql.Record;
 import ee.smkv.sql.SimpleDataSource;
+import ee.smkv.sql.SqlInsert;
 
 
 import java.sql.Timestamp;
@@ -20,7 +21,8 @@ public class ExampleUsage {
     database.execute("CREATE TABLE Airport (id int auto_increment , IATA VARCHAR(3) , name VARCHAR2(255))");
 
     database.insert("INSERT INTO Airport (IATA , name) VALUES( ? , ? )", "TLL", "Tallinn Ülemiste");
-    database.insert("INSERT INTO Airport (IATA , name) VALUES( ? , ? )", "HEL", "Helsinki Vaanta");
+    SqlInsert insert = database.insert("INSERT INTO Airport (IATA , name) VALUES( ? , ? )", "HEL", "Helsinki Vaanta");
+    System.out.println(insert.getGeneratedKey());
 
 
     for( Record record : database.select("SELECT * FROM Airport ORDER BY name")){
